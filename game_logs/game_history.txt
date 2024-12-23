@@ -1,0 +1,336 @@
+
+Game Log - 2024-12-22 19:17:38
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 43 seconds
+Black Player: AI (EASY)
+White Player: AI (HARD)
+Final Score:
+  Black: 49
+  White: 15
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:18:02
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 13 seconds
+Black Player: AI (HARD)
+White Player: AI (EASY)
+Final Score:
+  Black: 44
+  White: 19
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:18:59
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 47 seconds
+Black Player: AI (EASY)
+White Player: AI (HARD)
+Final Score:
+  Black: 30
+  White: 34
+Winner: White
+----------------------------------------
+
+Game Log - 2024-12-22 19:19:46
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 25 seconds
+Black Player: AI (EASY)
+White Player: AI (HARD)
+Final Score:
+  Black: 50
+  White: 14
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:20:05
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 7 seconds
+Black Player: AI (EASY)
+White Player: AI (HARD)
+Final Score:
+  Black: 17
+  White: 0
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:20:43
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 28 seconds
+Black Player: AI (EASY)
+White Player: AI (HARD)
+Final Score:
+  Black: 51
+  White: 13
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:21:21
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 4 seconds
+Black Player: AI (EASY)
+White Player: AI (HARD)
+Final Score:
+  Black: 13
+  White: 0
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:21:43
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 11 seconds
+Black Player: AI (EASY)
+White Player: AI (HARD)
+Final Score:
+  Black: 33
+  White: 0
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:22:35
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 48 seconds
+Black Player: AI (EASY)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 22
+  White: 42
+Winner: White
+----------------------------------------
+
+Game Log - 2024-12-22 19:23:33
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 46 seconds
+Black Player: AI (EASY)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 40
+  White: 24
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:24:21
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 43 seconds
+Black Player: AI (EASY)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 39
+  White: 25
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:25:33
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 31 seconds
+Black Player: AI (EASY)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 44
+  White: 20
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:32:21
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 56 seconds
+Black Player: AI (EASY)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 25
+  White: 39
+Winner: White
+----------------------------------------
+
+Game Log - 2024-12-22 19:33:23
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 37 seconds
+Black Player: AI (EASY)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 28
+  White: 36
+Winner: White
+----------------------------------------
+
+Game Log - 2024-12-22 19:34:19
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 44 seconds
+Black Player: AI (HARD)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 38
+  White: 26
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:36:25
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 34 seconds
+Black Player: AI (HARD)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 50
+  White: 14
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:38:41
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 1 minutes, 13 seconds
+Black Player: AI (HARD)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 53
+  White: 11
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:41:14
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 1 minutes, 1 seconds
+Black Player: AI (EXPERT)
+White Player: AI (HARD)
+Final Score:
+  Black: 38
+  White: 26
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:43:51
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 1 minutes, 1 seconds
+Black Player: AI (EXPERT)
+White Player: AI (HARD)
+Final Score:
+  Black: 42
+  White: 22
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:45:23
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 35 seconds
+Black Player: AI (EASY)
+White Player: AI (MEDIUM)
+Final Score:
+  Black: 46
+  White: 18
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 19:49:46
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 4 minutes, 5 seconds
+Black Player: AI (HARD)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 53
+  White: 11
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 20:24:18
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 7 seconds
+Black Player: AI (MEDIUM)
+White Player: AI (EASY)
+Final Score:
+  Black: 37
+  White: 27
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 20:25:47
+----------------------------------------
+Game Mode: Player vs AI
+Game Duration: 0 minutes, 38 seconds
+Black Player: Human Player
+White Player: AI (EASY)
+Final Score:
+  Black: 40
+  White: 24
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 20:27:33
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 27 seconds
+Black Player: AI (HARD)
+White Player: AI (EASY)
+Final Score:
+  Black: 43
+  White: 21
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 20:28:59
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 1 minutes, 5 seconds
+Black Player: AI (MEDIUM)
+White Player: AI (HARD)
+Final Score:
+  Black: 44
+  White: 20
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 20:32:18
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 30 seconds
+Black Player: AI (EXPERT)
+White Player: AI (MEDIUM)
+Final Score:
+  Black: 56
+  White: 8
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 20:34:20
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 1 minutes, 59 seconds
+Black Player: AI (HARD)
+White Player: AI (EXPERT)
+Final Score:
+  Black: 44
+  White: 19
+Winner: Black
+----------------------------------------
+
+Game Log - 2024-12-22 20:34:54
+----------------------------------------
+Game Mode: AI vs AI
+Game Duration: 0 minutes, 25 seconds
+Black Player: AI (HARD)
+White Player: AI (EASY)
+Final Score:
+  Black: 47
+  White: 17
+Winner: Black
+----------------------------------------
