@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
 public class Reversi_PvsP extends JFrame {
     private static final int BOARD_SIZE = 8;
     private static final int CELL_SIZE = 60;
@@ -62,10 +63,10 @@ public class Reversi_PvsP extends JFrame {
 
         // Set up initial pieces
         int mid = BOARD_SIZE / 2;
-        gameState[mid-1][mid-1] = 2; // White
-        gameState[mid-1][mid] = 1;   // Black
-        gameState[mid][mid-1] = 1;   // Black
-        gameState[mid][mid] = 2;     // White
+        gameState[mid - 1][mid - 1] = 2; // White
+        gameState[mid - 1][mid] = 1; // Black
+        gameState[mid][mid - 1] = 1; // Black
+        gameState[mid][mid] = 2; // White
 
         updateBoard();
         updateStatus();
@@ -83,8 +84,8 @@ public class Reversi_PvsP extends JFrame {
 
         // Update the game
         isBlackTurn = !isBlackTurn;
-        updateBoard();  // Move this after changing turns
-        
+        updateBoard(); // Move this after changing turns
+
         // Check if next player can make a move
         if (!hasValidMoves(isBlackTurn)) {
             if (!hasValidMoves(!isBlackTurn)) {
@@ -93,7 +94,7 @@ public class Reversi_PvsP extends JFrame {
             } else {
                 isBlackTurn = !isBlackTurn;
                 JOptionPane.showMessageDialog(this, "No valid moves available. Turn skipped.");
-                updateBoard();  // Add this to refresh after skipping turn
+                updateBoard(); // Add this to refresh after skipping turn
             }
         }
 
@@ -101,6 +102,7 @@ public class Reversi_PvsP extends JFrame {
     }
 
     private boolean isValidMove(int row, int col, boolean isBlack) {
+        // Check if the cell is empty
         if (gameState[row][col] != 0) {
             return false;
         }
@@ -108,31 +110,49 @@ public class Reversi_PvsP extends JFrame {
         int player = isBlack ? 1 : 2;
         int opponent = isBlack ? 2 : 1;
 
-        int[][] directions = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
+        int[][] directions = {
+                { -1, -1 }, { -1, 0 }, { -1, 1 },
+                { 0, -1 }, { 0, 1 },
+                { 1, -1 }, { 1, 0 }, { 1, 1 }
+        };
 
-        for (int[] dir : directions) {
-            int r = row + dir[0];
-            int c = col + dir[1];
+        // Check each direction
+        for (int[] direction : directions) {
+            int newRow = row + direction[0];
+            int newCol = col + direction[1];
             boolean foundOpponent = false;
 
-            while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-                if (gameState[r][c] == opponent) {
+            // Continue in this direction until board boundary is reached
+            while (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE) {
+                if (gameState[newRow][newCol] == opponent) {
+                    // Found an opponent's piece
                     foundOpponent = true;
-                } else if (gameState[r][c] == player && foundOpponent) {
+                } else if (gameState[newRow][newCol] == player && foundOpponent) {
+                    // Found our own piece after opponent's piece(s)
+                    // This is a valid move as we can flip opponent's pieces
                     return true;
                 } else {
+                    // Found empty cell or our piece without opponent's piece
+                    // No valid move in this direction
                     break;
                 }
-                r += dir[0];
-                c += dir[1];
+
+                // Move to next cell in current direction
+                newRow += direction[0];
+                newCol += direction[1];
             }
         }
+        // No valid moves found in any direction
         return false;
     }
 
     private void flipPieces(int row, int col, int player) {
         int opponent = (player == 1) ? 2 : 1;
-        int[][] directions = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
+        int[][] directions = {
+                { -1, -1 }, { -1, 0 }, { -1, 1 },
+                { 0, -1 }, { 0, 1 },
+                { 1, -1 }, { 1, 0 }, { 1, 1 }
+        };
 
         for (int[] dir : directions) {
             int r = row + dir[0];
@@ -172,7 +192,7 @@ public class Reversi_PvsP extends JFrame {
     private void updateBoard() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                board[i][j].setBackground(new Color(0, 120, 0));  // Reset background
+                board[i][j].setBackground(new Color(0, 120, 0)); // Reset background
                 if (gameState[i][j] == 1) {
                     board[i][j].setIcon(createDiskIcon(Color.BLACK));
                 } else if (gameState[i][j] == 2) {
@@ -204,8 +224,10 @@ public class Reversi_PvsP extends JFrame {
         int whiteCount = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                if (gameState[i][j] == 1) blackCount++;
-                else if (gameState[i][j] == 2) whiteCount++;
+                if (gameState[i][j] == 1)
+                    blackCount++;
+                else if (gameState[i][j] == 2)
+                    whiteCount++;
             }
         }
         statusLabel.setText(isBlackTurn ? "Black's turn" : "White's turn");
@@ -217,11 +239,13 @@ public class Reversi_PvsP extends JFrame {
         int whiteCount = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                if (gameState[i][j] == 1) blackCount++;
-                else if (gameState[i][j] == 2) whiteCount++;
+                if (gameState[i][j] == 1)
+                    blackCount++;
+                else if (gameState[i][j] == 2)
+                    whiteCount++;
             }
         }
-        
+
         String winner;
         if (blackCount > whiteCount) {
             winner = "Black wins!";
@@ -230,10 +254,10 @@ public class Reversi_PvsP extends JFrame {
         } else {
             winner = "It's a tie!";
         }
-        
-        JOptionPane.showMessageDialog(this, 
-            String.format("Game Over!\nBlack: %d\nWhite: %d\n%s", 
-            blackCount, whiteCount, winner));
+
+        JOptionPane.showMessageDialog(this,
+                String.format("Game Over!\nBlack: %d\nWhite: %d\n%s",
+                        blackCount, whiteCount, winner));
     }
 
     public static void main(String[] args) {

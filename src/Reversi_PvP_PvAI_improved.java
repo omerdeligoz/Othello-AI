@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 public class Reversi_PvP_PvAI_improved extends JFrame {
     private static final int BOARD_SIZE = 8;
@@ -12,30 +11,30 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
     private JLabel scoreLabel;
     private boolean isAIMode = false;
     private boolean isAITurn = false;
-
+    
     public Reversi_PvP_PvAI_improved() {
- // Ask for game mode
+        // Ask for game mode
         int choice = JOptionPane.showOptionDialog(null,
-            "Select Game Mode",
-            "Reversi",
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            new String[]{"Player vs Player", "Player vs AI"},
-            "Player vs Player");
+        "Select Game Mode",
+        "Reversi",
+        JOptionPane.DEFAULT_OPTION,
+        JOptionPane.QUESTION_MESSAGE,
+        null,
+        new String[]{"Player vs Player", "Player vs AI"},
+        "Player vs Player");
         
         isAIMode = (choice == 1);
         
         setTitle("Reversi Game - " + (isAIMode ? "Player vs AI" : "Player vs Player"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
+        
         // Initialize the game board
         JPanel boardPanel = new JPanel(new GridLayout(BOARD_SIZE, BOARD_SIZE));
         board = new JButton[BOARD_SIZE][BOARD_SIZE];
         gameState = new int[BOARD_SIZE][BOARD_SIZE];
         isBlackTurn = true;
-
+        
         // Create the board buttons
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -48,24 +47,24 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
                 boardPanel.add(board[i][j]);
             }
         }
-
+        
         // Initialize status and score labels
         statusLabel = new JLabel("Black's turn");
         scoreLabel = new JLabel("Black: 2  White: 2");
         JPanel infoPanel = new JPanel(new GridLayout(2, 1));
         infoPanel.add(statusLabel);
         infoPanel.add(scoreLabel);
-
+        
         add(boardPanel, BorderLayout.CENTER);
         add(infoPanel, BorderLayout.SOUTH);
-
+        
         // Set up initial game state
         initializeGame();
-
+        
         pack();
         setLocationRelativeTo(null);
     }
-
+    
     private void initializeGame() {
         // Clear the board
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -74,37 +73,37 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
                 board[i][j].setIcon(null);
             }
         }
-
+        
         // Set up initial pieces
         int mid = BOARD_SIZE / 2;
         gameState[mid-1][mid-1] = 2; // White
         gameState[mid-1][mid] = 1;   // Black
         gameState[mid][mid-1] = 1;   // Black
         gameState[mid][mid] = 2;     // White
-
+        
         updateBoard();
         updateStatus();
     }
-
+    
     private void makeMove(int row, int col) {
         // Prevent any moves during AI's turn
         if (isAIMode && !isBlackTurn) {
             return; // It's AI's turn (white's turn)
         }
-
+        
         if (gameState[row][col] != 0 || !isValidMove(row, col, isBlackTurn)) {
             return;
         }
-
+        
         // Place the piece and flip opponent's pieces
         int player = isBlackTurn ? 1 : 2;
         gameState[row][col] = player;
         flipPieces(row, col, player);
-
+        
         // Update the game
         isBlackTurn = !isBlackTurn;
         updateBoard();
-
+        
         // Check if next player can make a move
         if (!hasValidMoves(isBlackTurn)) {
             if (!hasValidMoves(!isBlackTurn)) {
@@ -115,9 +114,9 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
                 updateBoard();
             }
         }
-
+        
         updateStatus();
-
+        
         // Handle AI move if it's AI's turn (white's turn)
         if (isAIMode && !isBlackTurn) {
             isAITurn = true;
@@ -129,8 +128,8 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
             timer.start();
         }
     }
-
-
+    
+    
     private void makeAIMove() {
         if (!isAITurn) return;
         
@@ -160,7 +159,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         }
         isAITurn = false;
     }
-
+    
     private static class Move {
         int row, col;
         Move(int row, int col) {
@@ -168,18 +167,18 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
             this.col = col;
         }
     }
-
+    
     private Move findBestMove() {
         int[][] boardCopy = new int[BOARD_SIZE][BOARD_SIZE];
         for (int i = 0; i < BOARD_SIZE; i++) {
             System.arraycopy(gameState[i], 0, boardCopy[i], 0, BOARD_SIZE);
         }
-
+        
         Move bestMove = null;
         int bestValue = Integer.MIN_VALUE;
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
-
+        
         // Count available moves and empty spaces
         int availableMoves = 0;
         int emptySpaces = 0;
@@ -191,21 +190,21 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
                 }
             }
         }
-
+        
         // Adjust depth based on game phase
         int depth;
         if (emptySpaces <= 8) depth = 6;      // End game
         else if (emptySpaces <= 16) depth = 5; // Late game
         else if (emptySpaces <= 32) depth = 4; // Mid game
         else depth = 3;                        // Early game
-
+        
         // AI is always white (!isBlackTurn)
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (isValidMove(i, j, false)) {
                     int[][] newBoard = makeTemporaryMove(boardCopy, i, j, false);
                     int moveValue = minimax(newBoard, depth, false, alpha, beta);
-
+                    
                     if (moveValue > bestValue) {
                         bestValue = moveValue;
                         bestMove = new Move(i, j);
@@ -214,7 +213,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
                 }
             }
         }
-
+        
         if (bestMove == null && hasValidMoves(false)) {
             for (int i = 0; i < BOARD_SIZE; i++) {
                 for (int j = 0; j < BOARD_SIZE; j++) {
@@ -224,15 +223,15 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
                 }
             }
         }
-
+        
         return bestMove;
     }
-
+    
     private int minimax(int[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
         if (depth == 0 || isGameOver(board)) {
             return evaluateBoard(board);
         }
-
+        
         if (isMaximizing) {
             int maxEval = Integer.MIN_VALUE;
             for (int i = 0; i < BOARD_SIZE; i++) {
@@ -267,7 +266,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
             return minEval;
         }
     }
-
+    
     
     private int[][] makeTemporaryMove(int[][] board, int row, int col, boolean isBlack) {
         int[][] newBoard = new int[BOARD_SIZE][BOARD_SIZE];
@@ -280,17 +279,17 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         flipPiecesOnBoard(newBoard, row, col, player);
         return newBoard;
     }
-
+    
     private void flipPiecesOnBoard(int[][] board, int row, int col, int player) {
         int opponent = (player == 1) ? 2 : 1;
         int[][] directions = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
-
+        
         for (int[] dir : directions) {
             int r = row + dir[0];
             int c = col + dir[1];
             boolean foundOpponent = false;
             java.util.List<Point> toFlip = new java.util.ArrayList<>();
-
+            
             while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
                 if (board[r][c] == opponent) {
                     foundOpponent = true;
@@ -308,21 +307,21 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
             }
         }
     }
-
+    
     private boolean isValidMoveOnBoard(int[][] board, int row, int col, boolean isBlack) {
         if (board[row][col] != 0) {
             return false;
         }
-
+        
         int player = isBlack ? 1 : 2;
         int opponent = isBlack ? 2 : 1;
         int[][] directions = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
-
+        
         for (int[] dir : directions) {
             int r = row + dir[0];
             int c = col + dir[1];
             boolean foundOpponent = false;
-
+            
             while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
                 if (board[r][c] == opponent) {
                     foundOpponent = true;
@@ -337,19 +336,19 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         }
         return false;
     }
-
+    
     private boolean isGameOver(int[][] board) {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == 0 && (isValidMoveOnBoard(board, i, j, true) || 
-                    isValidMoveOnBoard(board, i, j, false))) {
+                isValidMoveOnBoard(board, i, j, false))) {
                     return false;
                 }
             }
         }
         return true;
     }
-
+    
     private int evaluateBoard(int[][] board) {
         int aiScore = 0;
         int playerScore = 0;
@@ -426,11 +425,11 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         
         // Combine all factors with appropriate weights
         return (aiScore - playerScore) * 10 +            // Position weight
-               (aiMobility - playerMobility) * 50 +      // Mobility weight
-               cornerScore * 200 +                       // Corner weight
-               edgeScore * 100;                         // Edge weight
+        (aiMobility - playerMobility) * 50 +      // Mobility weight
+        cornerScore * 200 +                       // Corner weight
+        edgeScore * 100;                         // Edge weight
     }
-
+    
     private int countValidMoves(int[][] board, boolean isBlack) {
         int count = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -442,7 +441,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         }
         return count;
     }
-
+    
     private int evaluateCorners(int[][] board) {
         int aiCorners = 0;
         int playerCorners = 0;
@@ -455,7 +454,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         
         return aiCorners - playerCorners;
     }
-
+    
     private int evaluateEdges(int[][] board) {
         int aiEdges = 0;
         int playerEdges = 0;
@@ -478,22 +477,22 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         
         return aiEdges - playerEdges;
     }
-
+    
     private boolean isValidMove(int row, int col, boolean isBlack) {
         if (gameState[row][col] != 0) {
             return false;
         }
-
+        
         int player = isBlack ? 1 : 2;
         int opponent = isBlack ? 2 : 1;
-
+        
         int[][] directions = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
-
+        
         for (int[] dir : directions) {
             int r = row + dir[0];
             int c = col + dir[1];
             boolean foundOpponent = false;
-
+            
             while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
                 if (gameState[r][c] == opponent) {
                     foundOpponent = true;
@@ -508,17 +507,17 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         }
         return false;
     }
-
+    
     private void flipPieces(int row, int col, int player) {
         int opponent = (player == 1) ? 2 : 1;
         int[][] directions = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
-
+        
         for (int[] dir : directions) {
             int r = row + dir[0];
             int c = col + dir[1];
             boolean foundOpponent = false;
             java.util.List<Point> toFlip = new java.util.ArrayList<>();
-
+            
             while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
                 if (gameState[r][c] == opponent) {
                     foundOpponent = true;
@@ -536,7 +535,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
             }
         }
     }
-
+    
     private boolean hasValidMoves(boolean isBlack) {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -547,7 +546,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         }
         return false;
     }
-
+    
     private void updateBoard() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -566,7 +565,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
             }
         }
     }
-
+    
     private ImageIcon createDiskIcon(Color color) {
         int size = CELL_SIZE - 10;
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -577,7 +576,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         g2d.dispose();
         return new ImageIcon(image);
     }
-
+    
     private void updateStatus() {
         int blackCount = 0;
         int whiteCount = 0;
@@ -590,7 +589,7 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         statusLabel.setText(isBlackTurn ? "Black's turn" : "White's turn");
         scoreLabel.setText(String.format("Black: %d  White: %d", blackCount, whiteCount));
     }
-
+    
     private void endGame() {
         int blackCount = 0;
         int whiteCount = 0;
@@ -611,10 +610,10 @@ public class Reversi_PvP_PvAI_improved extends JFrame {
         }
         
         JOptionPane.showMessageDialog(this, 
-            String.format("Game Over!\nBlack: %d\nWhite: %d\n%s", 
-            blackCount, whiteCount, winner));
+        String.format("Game Over!\nBlack: %d\nWhite: %d\n%s", 
+        blackCount, whiteCount, winner));
     }
-
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new Reversi_PvP_PvAI_improved().setVisible(true);
