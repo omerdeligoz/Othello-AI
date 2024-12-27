@@ -1,5 +1,7 @@
 package Modular;
 
+import javax.swing.Timer;
+
 public class GameEngine {
     private Board board;
     private AI blackAI;
@@ -10,6 +12,8 @@ public class GameEngine {
     private int lastMoveRow = -1;
     private int lastMoveCol = -1;
     private long gameStartTime;
+    public int gameDepth = 4;
+    public int searchedNodes = 0;
 
     public GameEngine(Reversi ui, GameMode gameMode, AIDifficulty blackAIDifficulty, AIDifficulty whiteAIDifficulty) {
         this.ui = ui;
@@ -19,8 +23,8 @@ public class GameEngine {
 
         // Initialize AI players based on game mode
         if (gameMode == GameMode.HumanvsAI || gameMode == GameMode.AIvsAI) {
-            this.blackAI = (blackAIDifficulty != null) ? new AI(blackAIDifficulty) : null;
-            this.whiteAI = (whiteAIDifficulty != null) ? new AI(whiteAIDifficulty) : null;
+            this.blackAI = (blackAIDifficulty != null) ? new AI(blackAIDifficulty, this) : null;
+            this.whiteAI = (whiteAIDifficulty != null) ? new AI(whiteAIDifficulty, this) : null;
         } else {
             this.blackAI = null;
             this.whiteAI = null;
@@ -41,6 +45,7 @@ public class GameEngine {
 
     public void makePlayerMove(int row, int col) {
         if (Board.isValidMove(row, col, isBlackTurn, board.getState())) {
+            gameDepth++;
             board.makeMove(row, col, isBlackTurn);
             lastMoveRow = row;
             lastMoveCol = col;
@@ -73,32 +78,37 @@ public class GameEngine {
         AI currentAI = isBlackTurn ? blackAI : whiteAI;
         if (currentAI != null) {
             Move move = currentAI.findBestMove(board, isBlackTurn);
-            if (move != null) {
-                board.makeMove(move.row, move.col, isBlackTurn);
-                lastMoveRow = move.row;
-                lastMoveCol = move.col;
-                isBlackTurn = !isBlackTurn;
-                ui.updateBoard(board.getState(), isBlackTurn, lastMoveRow, lastMoveCol);
-                ui.updateStatus(isBlackTurn ? "Black's turn" : "White's turn", getScore());
+            Timer timer = new Timer(100, e -> { // 100 ms delay
+                if (move != null) {
+                    gameDepth++;
+                    board.makeMove(move.row, move.col, isBlackTurn);
+                    lastMoveRow = move.row;
+                    lastMoveCol = move.col;
+                    isBlackTurn = !isBlackTurn;
+                    ui.updateBoard(board.getState(), isBlackTurn, lastMoveRow, lastMoveCol);
+                    ui.updateStatus(isBlackTurn ? "Black's turn" : "White's turn", getScore());
 
-                // Check if next player can make a move
-                if (!board.hasValidMoves(isBlackTurn)) {
-                    if (!board.hasValidMoves(!isBlackTurn)) {
-                        endGame();
-                    } else {
-                        isBlackTurn = !isBlackTurn;
-                        if (gameMode != GameMode.AIvsAI) { // Only show message in human games
-                            ui.showErrorMessage("No valid moves available. Turn skipped.");
+                    // Check if next player can make a move
+                    if (!board.hasValidMoves(isBlackTurn)) {
+                        if (!board.hasValidMoves(!isBlackTurn)) {
+                            endGame();
+                        } else {
+                            isBlackTurn = !isBlackTurn;
+                            if (gameMode != GameMode.AIvsAI) { // Only show message in human games
+                                ui.showErrorMessage("No valid moves available. Turn skipped.");
+                            }
+                            ui.updateBoard(board.getState(), isBlackTurn, lastMoveRow, lastMoveCol);
                         }
-                        ui.updateBoard(board.getState(), isBlackTurn, lastMoveRow, lastMoveCol);
+                    }
+
+                    ui.updateStatus(isBlackTurn ? "Black's turn" : "White's turn", getScore());
+                    if (isAITurn()) {
+                        makeAIMove();
                     }
                 }
-
-                ui.updateStatus(isBlackTurn ? "Black's turn" : "White's turn", getScore());
-                if (isAITurn()) {
-                    makeAIMove();
-                }
-            }
+            });
+            timer.setRepeats(false); // Ensure the timer only runs once
+            timer.start(); // Start the timer
         }
     }
 
@@ -125,9 +135,10 @@ public class GameEngine {
         String winner = blackCount > whiteCount ? "Black" : whiteCount > blackCount ? "White" : "Tie";
         String player1 = getPlayerType(blackAI);
         String player2 = getPlayerType(whiteAI);
-        GameLogger.logGameResult(gameMode.name(), player1, player2, gameStartTime, AI.searchedNodes, blackCount,
+        GameLogger.logGameResult(gameMode.name(), player1, player2, gameStartTime, searchedNodes, blackCount,
                 whiteCount, winner);
-        ui.showEndGameDialog(winner, blackCount, whiteCount);
+        ui.showEndGameDialogAutomated();
+        // ui.showEndGameDialog(winner, blackCount, whiteCount);
     }
 
     private String getPlayerType(AI ai) {

@@ -45,21 +45,21 @@ public class Board {
         int opponent = isBlackTurn ? 2 : 1;
         int[][] directions = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } };
 
-        for (int[] dir : directions) {
-            int r = row + dir[0];
-            int c = col + dir[1];
+        for (int[] direction : directions) {
+            int newRow = row + direction[0];
+            int newCol = col + direction[1];
             boolean foundOpponent = false;
 
-            while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-                if (boardState[r][c] == opponent) {
+            while (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE) {
+                if (boardState[newRow][newCol] == opponent) {
                     foundOpponent = true;
-                } else if (boardState[r][c] == player && foundOpponent) {
+                } else if (boardState[newRow][newCol] == player && foundOpponent) {
                     return true;
                 } else {
                     break;
                 }
-                r += dir[0];
-                c += dir[1];
+                newRow += direction[0];
+                newCol += direction[1];
             }
         }
         return false;
@@ -79,17 +79,17 @@ public class Board {
         int opponent = (player == 1) ? 2 : 1;
         int[][] directions = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } };
 
-        for (int[] dir : directions) {
-            int r = row + dir[0];
-            int c = col + dir[1];
+        for (int[] direction : directions) {
+            int newRow = row + direction[0];
+            int newCol = col + direction[1];
             boolean foundOpponent = false;
             List<Point> toFlip = new ArrayList<>();
 
-            while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-                if (state[r][c] == opponent) {
+            while (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE) {
+                if (state[newRow][newCol] == opponent) {
                     foundOpponent = true;
-                    toFlip.add(new Point(r, c));
-                } else if (state[r][c] == player && foundOpponent) {
+                    toFlip.add(new Point(newRow, newCol));
+                } else if (state[newRow][newCol] == player && foundOpponent) {
                     for (Point p : toFlip) {
                         state[p.x][p.y] = player;
                     }
@@ -97,8 +97,8 @@ public class Board {
                 } else {
                     break;
                 }
-                r += dir[0];
-                c += dir[1];
+                newRow += direction[0];
+                newCol += direction[1];
             }
         }
     }

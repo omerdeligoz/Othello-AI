@@ -6,57 +6,62 @@ import java.util.Random;
 
 public class AI {
     public AIDifficulty difficulty;
-    public static int searchedNodes = 0;
+    private final GameEngine gameEngine;
 
-    private class Weights {
-        public int PieceDifferential = 0;
-        public int Mobility = 0;
-        public int Corner = 0;
-        public int Stability = 0;
-    }
+    private final WeightType earlyGameWeights = new WeightType(50, 50, 100, 20);
+    private final WeightType lateGameWeights = new WeightType(100, 20, 200, 150);
+    private WeightType weights;
 
-    private Weights weights = new Weights();
-
-    public AI(AIDifficulty difficulty) {
+    public AI(AIDifficulty difficulty, GameEngine gameEngine) {
         this.difficulty = difficulty;
+        this.gameEngine = gameEngine;
     }
 
     public Move findBestMove(Board board, boolean isBlackTurn) {
-        int depth = getSearchDepth(board);
+        int depth = getSearchDepth();
         List<Move> validMoves = board.getValidMoves(isBlackTurn);
 
         if (validMoves.isEmpty()) {
             return null; // No valid moves
         }
-        Move bestMove = validMoves.get(0);
-        if (isBlackTurn) {
-            int bestScore = Integer.MIN_VALUE;
-            for (Move move : validMoves) {
-                Board newBoard = new Board(board);
-                newBoard.makeMove(move.row, move.col, isBlackTurn);
-                int score = minimax(newBoard, depth - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+        List<Move> bestMoves = new ArrayList<>();
+        int bestScore = isBlackTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        for (Move move : validMoves) {
+            Board newBoard = new Board(board);
+            newBoard.makeMove(move.row, move.col, isBlackTurn);
+            int score = minimax(newBoard, depth - 1, !isBlackTurn, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+            if (isBlackTurn) {
                 if (score > bestScore) {
                     bestScore = score;
-                    bestMove = move;
+                    bestMoves.clear();
+                    bestMoves.add(move);
+                } else if (score == bestScore) {
+                    bestMoves.add(move);
                 }
-            }
-        } else {
-            int bestScore = Integer.MAX_VALUE;
-            for (Move move : validMoves) {
-                Board newBoard = new Board(board);
-                newBoard.makeMove(move.row, move.col, isBlackTurn);
-                int score = minimax(newBoard, depth - 1, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            } else {
                 if (score < bestScore) {
                     bestScore = score;
-                    bestMove = move;
+                    bestMoves.clear();
+                    bestMoves.add(move);
+                } else if (score == bestScore) {
+                    bestMoves.add(move);
                 }
             }
         }
-        return bestMove;
+
+        if (!bestMoves.isEmpty()) {
+            // Randomly select one of the best moves
+            Random random = new Random();
+            return bestMoves.get(random.nextInt(bestMoves.size()));
+        }
+
+        return null;
     }
 
     private int minimax(Board board, int depth, boolean isMaximizingPlayer, int alpha, int beta) {
-        searchedNodes++;
+        gameEngine.searchedNodes++;
         if (depth == 0 || board.isGameOver()) {
             return evaluateBoard(board.getState(), isMaximizingPlayer);
         }
@@ -91,18 +96,16 @@ public class AI {
     }
 
     private int evaluateBoard(int[][] boardState, boolean isBlackTurn) {
-        int totalPieces = countTotalPieces(boardState, searchedNodes);
+        int totalPieces = gameEngine.gameDepth;
+        // int totalPieces = countTotalPieces(boardState, gameEngine.searchedNodes);
         boolean isLateGame = totalPieces > 56;
-        weights.PieceDifferential = isLateGame ? 100 : 50;
-        weights.Mobility = isLateGame ? 20 : 50;
-        weights.Corner = isLateGame ? 200 : 100;
-        weights.Stability = isLateGame ? 50 : 20;
+        weights = isLateGame ? lateGameWeights : earlyGameWeights;
 
         int evaluation = switch (difficulty) {
-            case EASY -> evaluateBoardEasy(boardState, isBlackTurn);
-            case MEDIUM -> evaluateBoardMedium(boardState, isBlackTurn);
-            case HARD -> evaluateBoardHard(boardState, isBlackTurn);
-            case EXPERT -> evaluateBoardExpert(boardState, isBlackTurn);
+            case EASY -> evaluateBoardEasy(boardState);
+            case MEDIUM -> evaluateBoardMedium(boardState);
+            case HARD -> evaluateBoardHard(boardState);
+            case EXPERT -> evaluateBoardExpert(boardState);
         };
         if (!isBlackTurn) {
             evaluation = -evaluation;
@@ -111,20 +114,21 @@ public class AI {
         return evaluation;
     }
 
-    private int evaluateBoardEasy(int[][] board, boolean isBlack) {
+    private int evaluateBoardEasy(int[][] board) {
         return getPieceDifferentialScore(board);
     }
 
-    private int evaluateBoardMedium(int[][] board, boolean isBlack) {
+    private int evaluateBoardMedium(int[][] board ) {
         return getPieceDifferentialScore(board) + getMobilityScore(board);
     }
 
-    private int evaluateBoardHard(int[][] board, boolean isBlack) {
+    private int evaluateBoardHard(int[][] board) {
         return getPieceDifferentialScore(board) + getMobilityScore(board) + getCornerScore(board);
     }
 
-    private int evaluateBoardExpert(int[][] board, boolean isBlack) {
-        return getPieceDifferentialScore(board) + getMobilityScore(board) + getCornerScore(board) + getStabilityScore(board);
+    private int evaluateBoardExpert(int[][] board ) {
+        return getPieceDifferentialScore(board) + getMobilityScore(board) + getCornerScore(board)
+                + getStabilityScore(board);
     }
 
     private int getPieceDifferentialScore(int[][] board) {
@@ -151,7 +155,7 @@ public class AI {
         return (stabilityBlack - stabilityWhite) * weights.Stability;
     }
 
-    private int countTotalPieces(int[][] boardState, int color) {
+    private int countTotalPieces(int[][] boardState) {
         int count = 0;
         for (int i = 0; i < Board.BOARD_SIZE; i++) {
             for (int j = 0; j < Board.BOARD_SIZE; j++) {
@@ -223,8 +227,8 @@ public class AI {
         return stableCount;
     }
 
-    private int getSearchDepth(Board board) {
-        int emptySpaces = board.countEmptySpaces();
+    private int getSearchDepth() {
+        int emptySpaces = Board.BOARD_SIZE * Board.BOARD_SIZE - gameEngine.gameDepth;
         if (emptySpaces <= 10)
             return emptySpaces; // End game
         if (emptySpaces <= 16)
@@ -232,9 +236,5 @@ public class AI {
         if (emptySpaces <= 32)
             return 7; // Mid game
         return 6; // Early game
-    }
-
-    public static int getSearchNodes() {
-        return searchedNodes;
     }
 }

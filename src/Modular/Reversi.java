@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class Reversi extends JFrame {
     private GameEngine gameEngine;
@@ -12,6 +13,26 @@ public class Reversi extends JFrame {
     private JLabel statusLabel;
     private JLabel scoreLabel;
     private JLabel statisticsLabel;
+    private static int testCount = 1;
+
+    public Reversi(int testCount) {
+        super("Reversi");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        GameMode gameMode = GameMode.values()[2];
+        Random random = new Random();
+        int difficultyChoiceBlack = random.nextInt(4);
+        int difficultyChoiceWhite = random.nextInt(4);
+
+        AIDifficulty blackAIDifficulty = AIDifficulty.values()[difficultyChoiceBlack];
+        AIDifficulty whiteAIDifficulty = AIDifficulty.values()[difficultyChoiceWhite];
+
+        setTitle("Reversi - AI(" + blackAIDifficulty + ") vs AI(" + whiteAIDifficulty + ")");
+        gameEngine = new GameEngine(this, gameMode, blackAIDifficulty, whiteAIDifficulty);
+        initializeUI();
+        gameEngine.startGame();
+    }
 
     public Reversi() {
         super("Reversi");
@@ -19,7 +40,7 @@ public class Reversi extends JFrame {
         setLayout(new BorderLayout());
 
         // Game mode selection
-        String[] gameModes = { "Human vs Human", "Human vs AI", "AI vs AI" };
+        String[] gameModes = {"Human vs Human", "Human vs AI", "AI vs AI"};
         int gameModeChoice = JOptionPane.showOptionDialog(this,
                 "Select Game Mode",
                 "Reversi",
@@ -36,13 +57,13 @@ public class Reversi extends JFrame {
 
         if (gameMode == GameMode.HumanvsAI || gameMode == GameMode.AIvsAI) {
             // AI difficulty selection
-            String[] difficulties = { "Easy", "Medium", "Hard", "Expert" };
-            int difficultyChoiceBlack = -1;
-            int difficultyChoiceWhite = -1;
+            String[] difficulties = {"Easy", "Medium", "Hard", "Expert"};
+            int difficultyChoiceBlack;
+            int difficultyChoiceWhite;
 
             if (gameMode == GameMode.HumanvsAI) {
                 // Player chooses color
-                String[] colors = { "Black", "White" };
+                String[] colors = {"Black", "White"};
                 int colorChoice = JOptionPane.showOptionDialog(this,
                         "Choose your color",
                         "Color Selection",
@@ -118,17 +139,7 @@ public class Reversi extends JFrame {
         JPanel boardPanel = new JPanel(new GridLayout(Board.BOARD_SIZE, Board.BOARD_SIZE));
         for (int i = 0; i < Board.BOARD_SIZE; i++) {
             for (int j = 0; j < Board.BOARD_SIZE; j++) {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(Board.CELL_SIZE, Board.CELL_SIZE));
-                button.setBackground(new Color(0, 120, 0));
-                final int row = i;
-                final int col = j;
-                button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        gameEngine.makePlayerMove(row, col);
-                    }
-                });
+                JButton button = getJButton(i, j);
                 boardButtons[i][j] = button;
                 boardPanel.add(button);
             }
@@ -148,6 +159,16 @@ public class Reversi extends JFrame {
 
         pack();
         setLocationRelativeTo(null);
+    }
+
+    private JButton getJButton(int i, int j) {
+        JButton button = new JButton();
+        button.setPreferredSize(new Dimension(Board.CELL_SIZE, Board.CELL_SIZE));
+        button.setBackground(new Color(0, 120, 0));
+        final int row = i;
+        final int col = j;
+        button.addActionListener(e -> gameEngine.makePlayerMove(row, col));
+        return button;
     }
 
     public void updateBoard(int[][] boardState, boolean isBlackTurn, int lastMoveRow, int lastMoveCol) {
@@ -178,7 +199,7 @@ public class Reversi extends JFrame {
     public void updateStatus(String status, String score) {
         statusLabel.setText(status);
         scoreLabel.setText(score);
-        statisticsLabel.setText("Searched Nodes: " + AI.searchedNodes);
+        statisticsLabel.setText("Searched Nodes: " + gameEngine.searchedNodes + "   Game Depth: " + gameEngine.gameDepth);
     }
 
     public void showEndGameDialog(String winner, int blackCount, int whiteCount) {
@@ -189,7 +210,7 @@ public class Reversi extends JFrame {
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
                 null,
-                new String[] { "New Game", "Exit" },
+                new String[]{"New Game", "Exit"},
                 "New Game");
 
         if (option == 0) {
@@ -200,6 +221,14 @@ public class Reversi extends JFrame {
             // Exit the game
             System.exit(0);
         }
+    }
+
+    public void showEndGameDialogAutomated() {
+        if (testCount == 100) {
+            System.exit(0);
+        }
+        dispose();
+        new Reversi(++testCount).setVisible(true);
     }
 
     public void showErrorMessage(String message) {
@@ -219,7 +248,7 @@ public class Reversi extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new Reversi().setVisible(true);
+            new Reversi(0).setVisible(true);
         });
     }
 }
