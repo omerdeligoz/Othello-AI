@@ -1,3 +1,5 @@
+package reversi;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -34,15 +36,15 @@ public class Reversi extends JFrame {
         }
     }
 
-    private enum AIDifficulty {
-        EASY, MEDIUM, HARD, EXPERT, IMPOSSIBLE
+    public enum AIDifficulty {
+        EASY, MEDIUM, HARD, EXPERT
     }
 
     private enum WeightType {
         Mobility, Corner, PieceDifferential
     }
 
-    private enum GameMode {
+    public enum GameMode {
         PvsP, PvsAI, AIvsAI
     }
 
@@ -51,30 +53,31 @@ public class Reversi extends JFrame {
             WeightType.PieceDifferential, 5,
             WeightType.Corner, 25);
 
+    // Weight matrices for position scoring
     private static final int[][] earlyGameWeights = {
-            { 200, -100, 100, 50, 50, 100, -100, 200 },
-            { -100, -200, -50, -50, -50, -50, -200, -100 },
-            { 100, -50, 1, 1, 1, 1, -50, 100 },
-            { 50, -50, 1, 1, 1, 1, -50, 50 },
-            { 50, -50, 1, 1, 1, 1, -50, 50 },
-            { 100, -50, 1, 1, 1, 1, -50, 100 },
-            { -100, -200, -50, -50, -50, -50, -200, -100 },
-            { 200, -100, 100, 50, 50, 100, -100, 200 }
+            {200, -20, 20, 5, 5, 20, -20, 200},
+            {-20, -40, -5, -5, -5, -5, -40, -20},
+            {20, -5, 15, 3, 3, 15, -5, 20},
+            {5, -5, 3, 3, 3, 3, -5, 5},
+            {5, -5, 3, 3, 3, 3, -5, 5},
+            {20, -5, 15, 3, 3, 15, -5, 20},
+            {-20, -40, -5, -5, -5, -5, -40, -20},
+            {200, -20, 20, 5, 5, 20, -20, 200}
     };
 
     private static final int[][] lateGameWeights = {
-            { 150, -50, 50, 30, 30, 50, -50, 150 },
-            { -50, -100, -20, -20, -20, -20, -100, -50 },
-            { 50, -20, 1, 1, 1, 1, -20, 50 },
-            { 30, -20, 1, 1, 1, 1, -20, 30 },
-            { 30, -20, 1, 1, 1, 1, -20, 30 },
-            { 50, -20, 1, 1, 1, 1, -20, 50 },
-            { -50, -100, -20, -20, -20, -20, -100, -50 },
-            { 150, -50, 50, 30, 30, 50, -50, 150 }
+            {100, 50, 50, 50, 50, 50, 50, 100},
+            {50, 30, 20, 20, 20, 20, 30, 50},
+            {50, 20, 10, 10, 10, 10, 20, 50},
+            {50, 20, 10, 5, 5, 10, 20, 50},
+            {50, 20, 10, 5, 5, 10, 20, 50},
+            {50, 20, 10, 10, 10, 10, 20, 50},
+            {50, 30, 20, 20, 20, 20, 30, 50},
+            {100, 50, 50, 50, 50, 50, 50, 100}
     };
 
     public Reversi() {
-        super("Reversi");
+        super("reversi.Reversi");
         gameStartTime = System.currentTimeMillis();
 
         // Create logs directory if it doesn't exist
@@ -90,10 +93,10 @@ public class Reversi extends JFrame {
         }
 
         // Ask for game mode
-        String[] options = { "Player vs Player", "Player vs AI", "AI vs AI" };
+        String[] options = {"Player vs Player", "Player vs AI", "AI vs AI"};
         int choice = JOptionPane.showOptionDialog(null,
                 "Select Game Mode",
-                "Reversi",
+                "reversi.Reversi",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
@@ -103,7 +106,7 @@ public class Reversi extends JFrame {
         gameMode = GameMode.values()[choice];
 
         if (gameMode == GameMode.PvsAI || gameMode == GameMode.AIvsAI) {
-            String[] difficulties = { "Easy", "Medium", "Hard", "Expert" };
+            String[] difficulties = {"Easy", "Medium", "Hard", "Expert"};
 
             if (gameMode == GameMode.PvsAI) {
                 // Let player choose their color
@@ -113,7 +116,7 @@ public class Reversi extends JFrame {
                         JOptionPane.DEFAULT_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
-                        new String[] { "Black", "White" },
+                        new String[]{"Black", "White"},
                         "Black");
 
                 isAIBlack = (colorChoice == 1); // AI is black if player chose white
@@ -155,11 +158,11 @@ public class Reversi extends JFrame {
             }
         }
         if (gameMode == GameMode.AIvsAI) {
-            setTitle("Reversi - AI(" + blackAIDifficulty + ") vs AI(" + whiteAIDifficulty + ")");
+            setTitle("reversi.Reversi - AI(" + blackAIDifficulty + ") vs AI(" + whiteAIDifficulty + ")");
         } else if (gameMode == GameMode.PvsAI) {
-            setTitle("Reversi - Player vs AI(" + (isAIBlack ? blackAIDifficulty : whiteAIDifficulty) + ")");
+            setTitle("reversi.Reversi - Player vs AI(" + (isAIBlack ? blackAIDifficulty : whiteAIDifficulty) + ")");
         } else {
-            setTitle("Reversi - Player vs Player");
+            setTitle("reversi.Reversi - Player vs Player");
         }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -198,6 +201,41 @@ public class Reversi extends JFrame {
 
         pack();
         setLocationRelativeTo(null);
+    }
+
+    public Reversi(GameMode gameMode, AIDifficulty blackAIDifficulty, AIDifficulty whiteAIDifficulty) {
+        this();
+        this.gameMode = gameMode;
+        this.blackAIDifficulty = blackAIDifficulty;
+        this.whiteAIDifficulty = whiteAIDifficulty;
+        setTitle("reversi.Reversi - AI(" + blackAIDifficulty + ") vs AI(" + whiteAIDifficulty + ")");
+    }
+
+    public void startGame() {
+        initializeGame();
+        while (!isGameOver(gameState)) {
+            makeAIMove();
+        }
+    }
+
+    public String getWinner() {
+        int blackCount = 0;
+        int whiteCount = 0;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (gameState[i][j] == 1)
+                    blackCount++;
+                else if (gameState[i][j] == 2)
+                    whiteCount++;
+            }
+        }
+        if (blackCount > whiteCount) {
+            return "Black";
+        } else if (whiteCount > blackCount) {
+            return "White";
+        } else {
+            return "Tie";
+        }
     }
 
     private void logGameResult(int blackCount, int whiteCount, String winner) {
@@ -488,7 +526,7 @@ public class Reversi extends JFrame {
 
     private void flipPieces(int[][] targetBoard, int row, int col, int player) {
         int opponent = (player == 1) ? 2 : 1;
-        int[][] directions = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } };
+        int[][] directions = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
         for (int[] direction : directions) {
             int newRow = row + direction[0];
@@ -521,7 +559,7 @@ public class Reversi extends JFrame {
 
         int player = isBlack ? 1 : 2;
         int opponent = isBlack ? 2 : 1;
-        int[][] directions = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } };
+        int[][] directions = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
         for (int[] dir : directions) {
             int r = row + dir[0];
@@ -580,8 +618,6 @@ public class Reversi extends JFrame {
                 return evaluateBoardHard(board, isBlack);
             case EXPERT:
                 return evaluateBoardExpert(board, isBlack);
-            case IMPOSSIBLE:
-                return evaluateBoardImpossible(board, isBlack);
             default:
                 return evaluateBoardMedium(board, isBlack);
         }
@@ -611,36 +647,10 @@ public class Reversi extends JFrame {
         int opponent = isBlack ? 2 : 1;
 
         int score = 0;
-
-        // Basic piece counting with weighted corners
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] == player) {
-                    score += weightMap.get(WeightType.PieceDifferential);
-                    // Only consider corners
-                    if (isCorner(i, j)) {
-                        score += weightMap.get(WeightType.Corner);
-                    }
-                } else if (board[i][j] == opponent) {
-                    score -= weightMap.get(WeightType.PieceDifferential);
-                    if (isCorner(i, j)) {
-                        score -= weightMap.get(WeightType.Corner);
-                    }
-                }
-            }
-        }
-        return score;
-    }
-
-    private int evaluateBoardHard(int[][] board, boolean isBlack) {
-        int player = isBlack ? 1 : 2;
-        int opponent = isBlack ? 2 : 1;
-
         int totalPieces = countTotalPieces(board);
         boolean isEarlyGame = totalPieces < 40;
 
-        // Position score using weights
-        int score = 0;
+        // Position scoring with basic weights
         int[][] weights = isEarlyGame ? earlyGameWeights : lateGameWeights;
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -652,91 +662,131 @@ public class Reversi extends JFrame {
             }
         }
 
-        // Mobility
+        // Basic mobility
         int playerMoves = countValidMoves(board, isBlack);
         int opponentMoves = countValidMoves(board, !isBlack);
-        score += (playerMoves - opponentMoves) * weightMap.get(WeightType.Mobility);
+        score += (playerMoves - opponentMoves) * 15;
+
+        return score;
+    }
+
+    private int evaluateBoardHard(int[][] board, boolean isBlack) {
+        int player = isBlack ? 1 : 2;
+        int opponent = isBlack ? 2 : 1;
+
+        int totalPieces = countTotalPieces(board);
+        boolean isEarlyGame = totalPieces < 40;
+        boolean isLateGame = totalPieces >= 50;
+        int score = 0;
+
+        int[][] weights = isEarlyGame ? earlyGameWeights : lateGameWeights;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == player) {
+                    score += weights[i][j] * 1.5;
+                } else if (board[i][j] == opponent) {
+                    score -= weights[i][j] * 1.5;
+                }
+            }
+        }
+
+        // Improved mobility scoring
+        int playerMoves = countValidMoves(board, isBlack);
+        int opponentMoves = countValidMoves(board, !isBlack);
+        score += (playerMoves - opponentMoves) * (isEarlyGame ? 25 : 12);
 
         // Corner control
-        score += evaluateCornersForColor(board, player, opponent) * 100;
+        score += evaluateCornersForColor(board, player, opponent) * 150;
+
+        // Edge control
+        score += evaluateEdgesForColor(board, player, opponent) * 30;
+
+        // Late game piece advantage
+        if (isLateGame) {
+            int playerPieces = countPieces(board, player);
+            int opponentPieces = countPieces(board, opponent);
+            score += (playerPieces - opponentPieces) * 50;
+        }
 
         return score;
     }
 
     private int evaluateBoardExpert(int[][] board, boolean isBlack) {
-        int myColor = isBlack ? 1 : 2;
-        int opponentColor = isBlack ? 2 : 1;
+        int player = isBlack ? 1 : 2;
+        int opponent = isBlack ? 2 : 1;
 
-        int totalPieces = 0;
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] != 0)
-                    totalPieces++;
-            }
-        }
-
+        int totalPieces = countTotalPieces(board);
         boolean isEarlyGame = totalPieces < 40;
         boolean isLateGame = totalPieces >= 50;
 
-        // Base position score
         int score = 0;
+
         int[][] weights = isEarlyGame ? earlyGameWeights : lateGameWeights;
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] == myColor) {
-                    score += weights[i][j] * 2; // Double the weight importance
-                } else if (board[i][j] == opponentColor) {
+                if (board[i][j] == player) {
+                    score += weights[i][j] * 2;
+                } else if (board[i][j] == opponent) {
                     score -= weights[i][j] * 2;
                 }
             }
         }
 
-        // Enhanced mobility scoring
-        int myMoves = countValidMoves(board, isBlack);
+        // Superior mobility scoring
+        int playerMoves = countValidMoves(board, isBlack);
         int opponentMoves = countValidMoves(board, !isBlack);
-        score += (myMoves - opponentMoves) * (isEarlyGame ? 30 : 15);
+        score += (playerMoves - opponentMoves) * (isEarlyGame ? 35 : 20);
 
-        // Stronger corner control
-        score += evaluateCornersForColor(board, myColor, opponentColor) * 200;
-
-        // Edge control
-        score += evaluateEdgesForColor(board, myColor, opponentColor) * 50;
+        // Enhanced corner and edge control
+        score += evaluateCornersForColor(board, player, opponent) * 250;
+        score += evaluateEdgesForColor(board, player, opponent) * 75;
 
         // Stability analysis
-        score += evaluateStablePieces(board, myColor) * (isEarlyGame ? 75 : 150);
+        score += evaluateStablePieces(board, player) * (isEarlyGame ? 100 : 200);
 
-        // Corner adjacency penalty in early game
+        // Corner vulnerability penalty (early game)
         if (isEarlyGame) {
-            score += evaluateCornerVulnerabilities(board, myColor, opponentColor) * -75;
+            score += evaluateCornerVulnerabilities(board, player, opponent) * -100;
         }
 
-        // Piece advantage only matters in late game
+        // Strategic late game
         if (isLateGame) {
-            int myPieces = 0, opponentPieces = 0;
-            for (int i = 0; i < BOARD_SIZE; i++) {
-                for (int j = 0; j < BOARD_SIZE; j++) {
-                    if (board[i][j] == myColor)
-                        myPieces++;
-                    else if (board[i][j] == opponentColor)
-                        opponentPieces++;
-                }
-            }
-            score += (myPieces - opponentPieces) * 100;
+            int playerPieces = countPieces(board, player);
+            int opponentPieces = countPieces(board, opponent);
+            score += (playerPieces - opponentPieces) * 150;
+
+            // Frontier discs penalty
+            score -= countFrontierDiscs(board, player) * 30;
         }
 
         return score;
     }
 
-    private int evaluateBoardImpossible(int[][] board, boolean isBlack) {
-        /*
-         * 1 Corner control
-         * 2 Mobility
-         * 3. Piece differential
-         * 4. Positional weighting
-         */
-        int score = 0;
+    private int countFrontierDiscs(int[][] board, int player) {
+        int frontierCount = 0;
+        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dy = {-1, 0, 1, -1, 1, -1, 0, 1};
 
-        return score;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == player) {
+                    // Check if disc is adjacent to empty space
+                    for (int dir = 0; dir < 8; dir++) {
+                        int newI = i + dx[dir];
+                        int newJ = j + dy[dir];
+                        if (isValidPosition(newI, newJ) && board[newI][newJ] == 0) {
+                            frontierCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return frontierCount;
+    }
+
+    private boolean isValidPosition(int row, int col) {
+        return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
     }
 
     // Helper method to check if a position is a corner
@@ -745,20 +795,24 @@ public class Reversi extends JFrame {
     }
 
     private int countTotalPieces(int[][] board) {
-        int totalPieces = 0;
+        return countPieces(board, 1) + countPieces(board, 2);
+    }
+
+    private int countPieces(int[][] board, int color) {
+        int count = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] != 0)
-                    totalPieces++;
+                if (board[i][j] == color)
+                    count++;
             }
         }
-        return totalPieces;
+        return count;
     }
 
     private int evaluateCornerVulnerabilities(int[][] board, int myColor, int opponentColor) {
         int[][] nearCorners = {
-                { 0, 1 }, { 1, 0 }, { 1, 1 }, { 0, 6 }, { 1, 6 }, { 1, 7 },
-                { 6, 0 }, { 6, 1 }, { 7, 1 }, { 6, 6 }, { 6, 7 }, { 7, 6 }
+                {0, 1}, {1, 0}, {1, 1}, {0, 6}, {1, 6}, {1, 7},
+                {6, 0}, {6, 1}, {7, 1}, {6, 6}, {6, 7}, {7, 6}
         };
 
         int vulnerabilityScore = 0;
@@ -775,7 +829,7 @@ public class Reversi extends JFrame {
     private int evaluateCornersForColor(int[][] board, int playerColor, int opponentColor) {
         int playerCorners = 0;
         int opponentCorners = 0;
-        int[][] corners = { { 0, 0 }, { 0, 7 }, { 7, 0 }, { 7, 7 } };
+        int[][] corners = {{0, 0}, {0, 7}, {7, 0}, {7, 7}};
 
         for (int[] corner : corners) {
             if (board[corner[0]][corner[1]] == playerColor)
@@ -821,8 +875,8 @@ public class Reversi extends JFrame {
         int stableCount = 0;
 
         // Check corners and their adjacent stable pieces
-        int[][] corners = { { 0, 0 }, { 0, 7 }, { 7, 0 }, { 7, 7 } };
-        int[][] directions = { { 1, 0 }, { 0, 1 }, { 1, 1 }, { -1, 0 }, { 0, -1 }, { -1, -1 }, { 1, -1 }, { -1, 1 } };
+        int[][] corners = {{0, 0}, {0, 7}, {7, 0}, {7, 7}};
+        int[][] directions = {{1, 0}, {0, 1}, {1, 1}, {-1, 0}, {0, -1}, {-1, -1}, {1, -1}, {-1, 1}};
 
         for (int[] corner : corners) {
             if (board[corner[0]][corner[1]] == color) {
@@ -942,7 +996,7 @@ public class Reversi extends JFrame {
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
                 null,
-                new String[] { "Return to Mode Selection" },
+                new String[]{"Return to Mode Selection"},
                 "Return to Mode Selection");
 
         if (result == 0) {
