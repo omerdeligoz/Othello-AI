@@ -12,7 +12,7 @@ public class GameEngine {
     private int lastMoveRow = -1;
     private int lastMoveCol = -1;
     private long gameStartTime;
-    public int gameDepth = 4;
+    public int placedTiles = 4;
     public int searchedNodes = 0;
     private final List<MoveHistory> gameHistory = new ArrayList<>();
 
@@ -46,8 +46,8 @@ public class GameEngine {
 
     public void makePlayerMove(int row, int col) {
         if (Board.isValidMove(row, col, isBlackTurn, board.getState())) {
-            gameHistory.add(new MoveHistory(board, isBlackTurn, searchedNodes, gameDepth));
-            gameDepth++;
+            gameHistory.add(new MoveHistory(board, isBlackTurn, searchedNodes, placedTiles));
+            placedTiles++;
             board.makeMove(row, col, isBlackTurn);
             lastMoveRow = row;
             lastMoveCol = col;
@@ -82,8 +82,8 @@ public class GameEngine {
             Move move = currentAI.findBestMove(board, isBlackTurn);
             Timer timer = new Timer(100, _ -> { // 100 ms delay
                 if (move != null) {
-                    gameHistory.add(new MoveHistory(board, isBlackTurn, searchedNodes, gameDepth));
-                    gameDepth++;
+                    gameHistory.add(new MoveHistory(board, isBlackTurn, searchedNodes, placedTiles));
+                    placedTiles++;
                     board.makeMove(move.row, move.col, isBlackTurn);
                     lastMoveRow = move.row;
                     lastMoveCol = move.col;
@@ -127,7 +127,7 @@ public class GameEngine {
             board = new Board(lastState.boardState);
             isBlackTurn = lastState.isBlackTurn;
             searchedNodes = lastState.searchedNodes;
-            gameDepth = lastState.gameDepth;
+            placedTiles = lastState.gameDepth;
             ui.updateBoard(board.getState(), isBlackTurn, -1, -1);
             ui.updateStatus(isBlackTurn ? "Black's turn" : "White's turn", getScore());
         }

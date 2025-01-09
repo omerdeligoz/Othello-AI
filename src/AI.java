@@ -6,11 +6,7 @@ public class AI {
     public AIDifficulty difficulty;
     private final GameEngine gameEngine;
 
-//    private WeightType earlyGameWeights = new WeightType(50, 50, 100, 20);
-    private final WeightType earlyGameWeights = new WeightType(1,1,1,1);
-    private final WeightType lateGameWeights = new WeightType(1,1,1,1);
-//    private WeightType lateGameWeights = new WeightType(100, 20, 200, 150);
-    private WeightType weights;
+    private final WeightType weights = new WeightType(1, 2, 1, 1);
 
     public AI(AIDifficulty difficulty, GameEngine gameEngine) {
         this.difficulty = difficulty;
@@ -97,11 +93,6 @@ public class AI {
     }
 
     private int evaluateBoard(int[][] boardState, boolean isBlackTurn) {
-        int totalPieces = gameEngine.gameDepth;
-        // int totalPieces = countTotalPieces(boardState, gameEngine.searchedNodes);
-        boolean isLateGame = totalPieces > 56;
-        weights = isLateGame ? lateGameWeights : earlyGameWeights;
-
         int evaluation = switch (difficulty) {
             case EASY -> evaluateBoardEasy(boardState);
             case MEDIUM -> evaluateBoardMedium(boardState);
@@ -228,8 +219,8 @@ public class AI {
     }
 
     private int getSearchDepth() {
-        int emptySpaces = Board.BOARD_SIZE * Board.BOARD_SIZE - gameEngine.gameDepth;
-        if (emptySpaces <= 12)
+        int emptySpaces = Board.BOARD_SIZE * Board.BOARD_SIZE - gameEngine.placedTiles;
+        if (emptySpaces <= 13)
             return emptySpaces; // End game
         if (emptySpaces <= 16)
             return 10; // Late game

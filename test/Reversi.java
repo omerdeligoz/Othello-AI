@@ -1007,7 +1007,7 @@ public class Reversi extends JFrame {
             }
         }
         statusLabel.setText(isBlackTurn ? "Black's turn" : "White's turn");
-        scoreLabel.setText(String.format("Black: %d  White: %d  Empty: %d", blackCount, whiteCount,
+        scoreLabel.setText(String.format("Black: %d  White: %d  Remaining: %d", blackCount, whiteCount,
                 BOARD_SIZE * BOARD_SIZE - (blackCount + whiteCount)));
         statisticsLabel.setText(String.format("Searched Nodes: %d", searchedNodes));
     }

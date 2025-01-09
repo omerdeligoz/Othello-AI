@@ -1,15 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 
 public class Reversi extends JFrame {
     private final GameEngine gameEngine;
     private JButton[][] boardButtons;
-    private JLabel turnLabel;
-    private JLabel scoreLabel;
-    private JLabel depthLabel;
-    private JLabel searchedNodesLabel;
+    private JLabel turnLabel, scoreLabel, depthLabel, searchedNodesLabel, lastMoveLabel;
 
 
     public Reversi() {
@@ -144,8 +142,10 @@ public class Reversi extends JFrame {
         // Create status labels
         turnLabel = new JLabel("Black's turn");
         scoreLabel = new JLabel("Black: 2  White: 2");
-        depthLabel = new JLabel("Game Depth: 4  Empty: 60");
+        depthLabel = new JLabel("Game Depth: 4  Remaining: 60");
         searchedNodesLabel = new JLabel("Searched Nodes: 0");
+        lastMoveLabel = new JLabel("Last Move: None");
+
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the info panel
@@ -153,6 +153,7 @@ public class Reversi extends JFrame {
         scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         depthLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         searchedNodesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lastMoveLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         infoPanel.add(turnLabel);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
         infoPanel.add(scoreLabel);
@@ -160,6 +161,8 @@ public class Reversi extends JFrame {
         infoPanel.add(depthLabel);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
         infoPanel.add(searchedNodesLabel);
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
+        infoPanel.add(lastMoveLabel);
 
         add(controlPanel, BorderLayout.NORTH);
         add(boardPanel, BorderLayout.CENTER);
@@ -204,12 +207,13 @@ public class Reversi extends JFrame {
                 }
             }
         }
+        lastMoveLabel.setText("Last Move: " + lastMoveRow + "," + lastMoveCol);
     }
 
     public void updateStatus(String status, String score) {
         turnLabel.setText(status);
         scoreLabel.setText(score);
-        depthLabel.setText("Game Depth: " + gameEngine.gameDepth + "  Empty: " + (Board.BOARD_SIZE * Board.BOARD_SIZE - gameEngine.gameDepth));
+        depthLabel.setText("Placed Tiles: " + gameEngine.placedTiles + "  Remaining: " + (Board.BOARD_SIZE * Board.BOARD_SIZE - gameEngine.placedTiles));
         searchedNodesLabel.setText("Searched Nodes: " + NumberFormat.getInstance().format(gameEngine.searchedNodes));
     }
 
