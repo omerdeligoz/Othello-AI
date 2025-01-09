@@ -1,19 +1,20 @@
-package Modular;
-
 import javax.swing.Timer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameEngine {
     private Board board;
-    private AI blackAI;
-    private AI whiteAI;
+    private final AI blackAI;
+    private final AI whiteAI;
     private boolean isBlackTurn;
-    private Reversi ui;
-    private GameMode gameMode;
+    private final Reversi ui;
+    private final GameMode gameMode;
     private int lastMoveRow = -1;
     private int lastMoveCol = -1;
     private long gameStartTime;
     public int gameDepth = 4;
     public int searchedNodes = 0;
+    private final List<MoveHistory> gameHistory = new ArrayList<>();
 
     public GameEngine(Reversi ui, GameMode gameMode, AIDifficulty blackAIDifficulty, AIDifficulty whiteAIDifficulty) {
         this.ui = ui;
@@ -45,6 +46,7 @@ public class GameEngine {
 
     public void makePlayerMove(int row, int col) {
         if (Board.isValidMove(row, col, isBlackTurn, board.getState())) {
+            gameHistory.add(new MoveHistory(board, isBlackTurn, searchedNodes, gameDepth));
             gameDepth++;
             board.makeMove(row, col, isBlackTurn);
             lastMoveRow = row;
@@ -78,8 +80,9 @@ public class GameEngine {
         AI currentAI = isBlackTurn ? blackAI : whiteAI;
         if (currentAI != null) {
             Move move = currentAI.findBestMove(board, isBlackTurn);
-            Timer timer = new Timer(100, e -> { // 100 ms delay
+            Timer timer = new Timer(100, _ -> { // 100 ms delay
                 if (move != null) {
+                    gameHistory.add(new MoveHistory(board, isBlackTurn, searchedNodes, gameDepth));
                     gameDepth++;
                     board.makeMove(move.row, move.col, isBlackTurn);
                     lastMoveRow = move.row;
@@ -118,15 +121,25 @@ public class GameEngine {
                         && ((isBlackTurn && blackAI != null) || (!isBlackTurn && whiteAI != null)));
     }
 
+    public void undoMove() {
+        if (!gameHistory.isEmpty()) {
+            MoveHistory lastState = gameHistory.removeLast();
+            board = new Board(lastState.boardState);
+            isBlackTurn = lastState.isBlackTurn;
+            searchedNodes = lastState.searchedNodes;
+            gameDepth = lastState.gameDepth;
+            ui.updateBoard(board.getState(), isBlackTurn, -1, -1);
+            ui.updateStatus(isBlackTurn ? "Black's turn" : "White's turn", getScore());
+        }
+    }
+
     private String getScore() {
         int blackCount = board.countPieces(1);
         int whiteCount = board.countPieces(2);
-        int emptyCount = Board.BOARD_SIZE * Board.BOARD_SIZE - (blackCount + whiteCount);
         String blackPlayer = getPlayerType(blackAI);
         String whitePlayer = getPlayerType(whiteAI);
 
-        return String.format("Black (%s): %d  White (%s): %d  Empty: %d", blackPlayer, blackCount, whitePlayer,
-                whiteCount, emptyCount);
+        return String.format("Black (%s): %d  White (%s): %d", blackPlayer, blackCount, whitePlayer, whiteCount);
     }
 
     private void endGame() {
@@ -137,8 +150,7 @@ public class GameEngine {
         String player2 = getPlayerType(whiteAI);
         GameLogger.logGameResult(gameMode.name(), player1, player2, gameStartTime, searchedNodes, blackCount,
                 whiteCount, winner);
-        ui.showEndGameDialogAutomated();
-        // ui.showEndGameDialog(winner, blackCount, whiteCount);
+        ui.showEndGameDialog(winner, blackCount, whiteCount);
     }
 
     private String getPlayerType(AI ai) {

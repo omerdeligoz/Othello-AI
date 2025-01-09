@@ -1,12 +1,10 @@
-package Modular;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
     public static final int BOARD_SIZE = 8;
     public static final int CELL_SIZE = 60;
-    private int[][] state;
+    private final int[][] state;
 
     public Board() {
         state = new int[BOARD_SIZE][BOARD_SIZE];

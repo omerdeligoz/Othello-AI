@@ -1,5 +1,3 @@
-package Modular;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,13 +6,16 @@ public class AI {
     public AIDifficulty difficulty;
     private final GameEngine gameEngine;
 
-    private final WeightType earlyGameWeights = new WeightType(50, 50, 100, 20);
-    private final WeightType lateGameWeights = new WeightType(100, 20, 200, 150);
+//    private WeightType earlyGameWeights = new WeightType(50, 50, 100, 20);
+    private final WeightType earlyGameWeights = new WeightType(1,1,1,1);
+    private final WeightType lateGameWeights = new WeightType(1,1,1,1);
+//    private WeightType lateGameWeights = new WeightType(100, 20, 200, 150);
     private WeightType weights;
 
     public AI(AIDifficulty difficulty, GameEngine gameEngine) {
         this.difficulty = difficulty;
         this.gameEngine = gameEngine;
+
     }
 
     public Move findBestMove(Board board, boolean isBlackTurn) {
@@ -118,7 +119,7 @@ public class AI {
         return getPieceDifferentialScore(board);
     }
 
-    private int evaluateBoardMedium(int[][] board ) {
+    private int evaluateBoardMedium(int[][] board) {
         return getPieceDifferentialScore(board) + getMobilityScore(board);
     }
 
@@ -126,9 +127,8 @@ public class AI {
         return getPieceDifferentialScore(board) + getMobilityScore(board) + getCornerScore(board);
     }
 
-    private int evaluateBoardExpert(int[][] board ) {
-        return getPieceDifferentialScore(board) + getMobilityScore(board) + getCornerScore(board)
-                + getStabilityScore(board);
+    private int evaluateBoardExpert(int[][] board) {
+        return getPieceDifferentialScore(board) + getMobilityScore(board) + getCornerScore(board) + getStabilityScore(board);
     }
 
     private int getPieceDifferentialScore(int[][] board) {
@@ -206,8 +206,8 @@ public class AI {
 
     private int countStablePieces(int[][] boardState, int color) {
         int stableCount = 0;
-        int[][] corners = { { 0, 0 }, { 0, 7 }, { 7, 0 }, { 7, 7 } };
-        int[][] directions = { { 1, 0 }, { 0, 1 }, { 1, 1 }, { -1, 0 }, { 0, -1 }, { -1, -1 }, { 1, -1 }, { -1, 1 } };
+        int[][] corners = {{0, 0}, {0, 7}, {7, 0}, {7, 7}};
+        int[][] directions = {{1, 0}, {0, 1}, {1, 1}, {-1, 0}, {0, -1}, {-1, -1}, {1, -1}, {-1, 1}};
 
         for (int[] corner : corners) {
             if (boardState[corner[0]][corner[1]] == color) {
@@ -229,12 +229,12 @@ public class AI {
 
     private int getSearchDepth() {
         int emptySpaces = Board.BOARD_SIZE * Board.BOARD_SIZE - gameEngine.gameDepth;
-        if (emptySpaces <= 10)
+        if (emptySpaces <= 12)
             return emptySpaces; // End game
         if (emptySpaces <= 16)
-            return 8; // Late game
+            return 10; // Late game
         if (emptySpaces <= 32)
-            return 7; // Mid game
-        return 6; // Early game
+            return 8; // Mid-game
+        return 7; // Early game
     }
 }
